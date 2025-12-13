@@ -8,12 +8,22 @@ import Overview from "@/components/hospitality-portal/Overview";
 import Analytics from "@/components/hospitality-portal/Analytics";
 import Entities from "@/components/hospitality-portal/Entities";
 import Reports from "@/components/hospitality-portal/Reports";
+import Cookies from "js-cookie";
 
-type DashboardView = "overview" | "analytics" | "entities" | "reports";
+type DashboardView =
+  | "overview"
+  | "analytics"
+  | "entities"
+  | "reports"
 
 const HospitalityDashboard = () => {
   const [activeView, setActiveView] = useState<DashboardView>("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const handleLogout = () => {
+    Cookies.remove("access_token");
+    // Cookies.remove("userProfile");
+    window.location.href = "/";
+  };
 
   const renderContent = () => {
     switch (activeView) {
@@ -32,11 +42,11 @@ const HospitalityDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#fdf8f4] to-[#fff7ec]">
-      <DashboardHeader 
-        onMenuToggle={() => setSidebarOpen(!sidebarOpen)} 
+      <DashboardHeader
+        onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
         portalName="Hospitality"
       />
-      
+
       <div className="flex">
         <Sidebar
           isOpen={sidebarOpen}
@@ -44,12 +54,11 @@ const HospitalityDashboard = () => {
           onViewChange={setActiveView}
           onClose={() => setSidebarOpen(false)}
           portalType="hospitality"
+          onLogout={handleLogout}
         />
-        
+
         <main className="flex-1 p-6 lg:ml-64">
-          <div className="max-w-7xl mx-auto">
-            {renderContent()}
-          </div>
+          <div className="max-w-7xl mx-auto">{renderContent()}</div>
         </main>
       </div>
     </div>
