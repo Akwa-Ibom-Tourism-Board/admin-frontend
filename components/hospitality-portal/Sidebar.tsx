@@ -52,7 +52,7 @@ const Sidebar = ({ isOpen, activeView, onViewChange, onClose, portalType = "hosp
       
       <aside className={`
         fixed left-0 top-0 h-full w-64 bg-white border-r border-[#e9e1d7] shadow-lg
-        transform transition-transform duration-300 z-50
+        transform transition-transform duration-300 z-30
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         <div className="p-6 border-b border-[#e9e1d7] lg:hidden">

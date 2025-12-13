@@ -15,7 +15,7 @@ const DashboardHeader = ({
   };
 
   return (
-    <header className="w-full bg-white border-b border-[#e9e1d7] shadow-sm fixed top-0 z-40 lg:pl-64">
+    <header className="w-full bg-white border-b border-[#e9e1d7] shadow-sm fixed top-0 z-20 lg:pl-64">
       <div className="px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
