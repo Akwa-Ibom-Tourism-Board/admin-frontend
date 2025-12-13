@@ -620,7 +620,7 @@ const AdminLogin = () => {
                 </div>
 
                 {/* Demo Credentials */}
-                <div className="mt-6 p-4 bg-[#fdf8f4] rounded-lg border border-[#e9e1d7]">
+                {/* <div className="mt-6 p-4 bg-[#fdf8f4] rounded-lg border border-[#e9e1d7]">
                   <p className="text-xs font-medium text-[#2a2523] mb-2">
                     Demo Credentials:
                   </p>
@@ -629,7 +629,7 @@ const AdminLogin = () => {
                     <br />
                     Password: admin123
                   </p>
-                </div>
+                </div> */}
               </div>
 
               {/* Footer */}
