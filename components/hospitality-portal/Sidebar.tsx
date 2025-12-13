@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// /* eslint-disable @typescript-eslint/no-explicit-any */
 // app/admin/components/Sidebar.tsx
 import {
   LayoutDashboard,
@@ -12,15 +12,14 @@ import {
   LogOut,
 } from "lucide-react";
 
-type DashboardView = "overview" | "analytics" | "entities" | "reports" | "logout"
-type CoreView = "overview" | "content" | "news" | "events" | "analytics" | "logout"
+type DashboardView = "overview" | "analytics" | "entities" | "reports"
+type CoreView = "overview" | "content" | "news" | "events" | "analytics"
 
 interface SidebarProps {
   isOpen: boolean;
   activeView: DashboardView | CoreView;
   onViewChange: (view: DashboardView | CoreView) => void;
   onClose: () => void;
-  onLogout: () => void;
   portalType?: "hospitality" | "core";
 }
 
@@ -29,7 +28,6 @@ const Sidebar = ({
   activeView,
   onViewChange,
   onClose,
-  onLogout,
   portalType = "hospitality",
 }: SidebarProps) => {
   const hospitalityMenu = [
@@ -41,7 +39,7 @@ const Sidebar = ({
     { id: "analytics" as DashboardView, label: "Analytics", icon: BarChart3 },
     { id: "entities" as DashboardView, label: "Entities", icon: Building2 },
     { id: "reports" as DashboardView, label: "Reports", icon: Download },
-    { id: "logout" as DashboardView, label: "Logout", icon: LogOut },
+    // { id: "logout" as DashboardView, label: "Logout", icon: LogOut },
   ];
 
   const coreMenu = [
@@ -50,7 +48,7 @@ const Sidebar = ({
     { id: "news" as CoreView, label: "News", icon: Globe },
     { id: "events" as CoreView, label: "Events", icon: Calendar },
     { id: "analytics" as CoreView, label: "Analytics", icon: BarChart3 },
-    { id: "logout" as DashboardView, label: "Logout", icon: LogOut },
+    // { id: "logout" as DashboardView, label: "Logout", icon: LogOut },
   ];
 
   const menuItems = portalType === "hospitality" ? hospitalityMenu : coreMenu;
@@ -105,11 +103,7 @@ const Sidebar = ({
                 <li key={item.id}>
                   <button
                     onClick={() => {
-                      if (item.id === "logout") {
-                        onLogout();
-                      } else {
                         onViewChange(item.id);
-                      }
                       onClose();
                     }}
                     className={`

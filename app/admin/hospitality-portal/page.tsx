@@ -9,7 +9,7 @@ import Overview from "@/components/hospitality-portal/Overview";
 import Analytics from "@/components/hospitality-portal/Analytics";
 import Entities from "@/components/hospitality-portal/Entities";
 import Reports from "@/components/hospitality-portal/Reports";
-import Cookies from "js-cookie";
+// import Cookies from "js-cookie";
 
 // type DashboardView =
 //   | "overview"
@@ -21,11 +21,11 @@ import Cookies from "js-cookie";
 const HospitalityDashboard = () => {
   const [activeView, setActiveView] = useState<any>("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const handleLogout = () => {
-    Cookies.remove("access_token");
-    // Cookies.remove("userProfile");
-    window.location.href = "/";
-  };
+  // const handleLogout = () => {
+  //   Cookies.remove("access_token");
+  //   // Cookies.remove("userProfile");
+  //   window.location.href = "/";
+  // };
 
   const renderContent = () => {
     switch (activeView) {
@@ -56,7 +56,7 @@ const HospitalityDashboard = () => {
           onViewChange={setActiveView}
           onClose={() => setSidebarOpen(false)}
           portalType="hospitality"
-          onLogout={handleLogout}
+          // onLogout={handleLogout}
         />
 
         <main className="flex-1 p-6 lg:ml-64">

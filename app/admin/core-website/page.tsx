@@ -5,18 +5,18 @@
 import { useState } from "react";
 import DashboardHeader from "@/components/hospitality-portal/DashboardHeader";
 import Sidebar from "@/components/hospitality-portal/Sidebar";
-import Cookies from "js-cookie";
+// import Cookies from "js-cookie";
 
 // type CoreView = "overview" | "content" | "news" | "events" | "analytics";
 
 const CoreWebsiteDashboard = () => {
   const [activeView, setActiveView] = useState<any>("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-    const handleLogout = () => {
-    Cookies.remove("access_token");
-    // Cookies.remove("userProfile");
-    window.location.href = "/";
-  };
+  //   const handleLogout = () => {
+  //   Cookies.remove("access_token");
+  //   // Cookies.remove("userProfile");
+  //   window.location.href = "/";
+  // };
 
   const renderContent = () => {
     return (
@@ -94,7 +94,7 @@ const CoreWebsiteDashboard = () => {
           onViewChange={setActiveView}
           onClose={() => setSidebarOpen(false)}
           portalType="core"
-          onLogout={handleLogout}
+          // onLogout={handleLogout}
         />
         
         <main className="flex-1 p-6 lg:ml-64">
