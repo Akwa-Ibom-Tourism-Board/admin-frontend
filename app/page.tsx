@@ -294,7 +294,7 @@ import {
 } from "lucide-react";
 import { useAlert } from "next-alert";
 import { useLoginAdmin } from "@/services/establishments/mutation";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -317,13 +317,13 @@ const AdminLogin = () => {
       color: "#00563b",
       icon: Hospital,
     },
-    {
-      id: "core",
-      name: "Core Website",
-      description: "Main Website Management",
-      color: "#e77818",
-      icon: Globe,
-    },
+    // {
+    //   id: "core",
+    //   name: "Core Website",
+    //   description: "Main Website Management",
+    //   color: "#e77818",
+    //   icon: Globe,
+    // },
   ];
 
   const handleSubmit = async () => {
@@ -334,8 +334,8 @@ const AdminLogin = () => {
     try {
       loginAdmin(formData, {
         onSuccess: (data) => {
-          Cookies.set("access_token",data.data.accessToken);
-          Cookies.set("admin",data.data);
+          Cookies.set("access_token", data.data.accessToken);
+          Cookies.set("admin", data.data);
           addAlert(
             "Success!",
             "Login successful! Redirecting to dashboard...",
@@ -471,9 +471,9 @@ const AdminLogin = () => {
 
                 {/* Portal Selection */}
                 <div className="mb-6">
-                  <label className="block text-sm font-medium text-[#2a2523] mb-3">
+                  {/* <label className="block text-sm font-medium text-[#2a2523] mb-3">
                     Select Portal
-                  </label>
+                  </label> */}
                   <div className="grid grid-cols-2 gap-3">
                     {portals.map((portal) => {
                       const Icon = portal.icon;
