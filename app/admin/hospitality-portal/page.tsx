@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // app/admin/page.tsx
 "use client";
 
@@ -10,14 +11,15 @@ import Entities from "@/components/hospitality-portal/Entities";
 import Reports from "@/components/hospitality-portal/Reports";
 import Cookies from "js-cookie";
 
-type DashboardView =
-  | "overview"
-  | "analytics"
-  | "entities"
-  | "reports"
+// type DashboardView =
+//   | "overview"
+//   | "analytics"
+//   | "entities"
+//   | "reports"
+//   | "logout"
 
 const HospitalityDashboard = () => {
-  const [activeView, setActiveView] = useState<DashboardView>("overview");
+  const [activeView, setActiveView] = useState<any>("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const handleLogout = () => {
     Cookies.remove("access_token");

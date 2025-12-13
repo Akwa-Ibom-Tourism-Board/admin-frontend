@@ -12,8 +12,8 @@ import {
   LogOut,
 } from "lucide-react";
 
-type DashboardView = "overview" | "analytics" | "entities" | "reports"
-type CoreView = "overview" | "content" | "news" | "events" | "analytics"
+type DashboardView = "overview" | "analytics" | "entities" | "reports" | "logout"
+type CoreView = "overview" | "content" | "news" | "events" | "analytics" | "logout"
 
 interface SidebarProps {
   isOpen: boolean;
