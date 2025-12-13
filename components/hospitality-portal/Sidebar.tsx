@@ -9,11 +9,10 @@ import {
   Calendar,
   Globe,
   X,
-  LogOut,
 } from "lucide-react";
 
-type DashboardView = "overview" | "analytics" | "entities" | "reports"
-type CoreView = "overview" | "content" | "news" | "events" | "analytics"
+type DashboardView = "overview" | "analytics" | "entities" | "reports";
+type CoreView = "overview" | "content" | "news" | "events" | "analytics";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -58,17 +57,17 @@ const Sidebar = ({
       {/* Overlay for mobile */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 bg-opacity-50 z-40 lg:hidden"
           onClick={onClose}
         />
       )}
 
       <aside
         className={`
-        fixed left-0 top-0 h-full w-64 bg-white border-r border-[#e9e1d7] shadow-lg
-        transform transition-transform duration-300 z-30
-        ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-      `}
+  fixed left-0 top-0 h-full w-64 bg-white border-r border-[#e9e1d7] shadow-lg
+  transform transition-transform duration-300 z-50
+  ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+`}
       >
         <div className="p-6 border-b border-[#e9e1d7] lg:hidden">
           <div className="flex items-center justify-between">
@@ -103,7 +102,7 @@ const Sidebar = ({
                 <li key={item.id}>
                   <button
                     onClick={() => {
-                        onViewChange(item.id);
+                      onViewChange(item.id);
                       onClose();
                     }}
                     className={`
