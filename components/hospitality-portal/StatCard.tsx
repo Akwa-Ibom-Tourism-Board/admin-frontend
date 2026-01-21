@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // app/admin/components/StatCard.tsx
 import { LucideIcon } from "lucide-react";
 
@@ -8,15 +9,17 @@ interface StatCardProps {
   color: string;
   change: string;
   loading?: boolean;
+  analyticsData?: any;
 }
 
-const StatCard = ({ 
-  title, 
-  value, 
-  icon: Icon, 
-  color, 
-  change, 
-  loading = false 
+const StatCard = ({
+  title,
+  value,
+  icon: Icon,
+  color,
+  change,
+  loading = false,
+  analyticsData,
 }: StatCardProps) => {
   if (loading) {
     return (
@@ -31,26 +34,36 @@ const StatCard = ({
     );
   }
 
+  if (!analyticsData) {
+    return (
+      <div className="bg-white rounded-xl border border-[#e9e1d7] p-6 shadow-sm">
+        <p className="text-center text-[#78716e]">
+          No data available currently
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-xl border border-[#e9e1d7] p-6 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-medium text-[#78716e] uppercase tracking-wide">
           {title}
         </h3>
-        <div 
+        <div
           className="w-10 h-10 rounded-lg flex items-center justify-center"
           style={{ backgroundColor: `${color}15` }}
         >
           <Icon className="w-5 h-5" style={{ color }} />
         </div>
       </div>
-      
+
       <div className="mb-2">
         <p className="text-3xl font-bold text-[#2a2523]">
-          {typeof value === 'number' ? value.toLocaleString() : value}
+          {typeof value === "number" ? value.toLocaleString() : value}
         </p>
       </div>
-      
+
       <p className="text-sm" style={{ color }}>
         {change}
       </p>

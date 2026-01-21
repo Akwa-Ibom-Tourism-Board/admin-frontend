@@ -28,3 +28,27 @@ export const approveEntityRegistration = async (establishmentId: string) => {
   );
   return response.data;
 };
+
+export const addEstablishments = async (formData: any) => {
+  try{
+    const response = await axiosInstance.post(
+      "/admin/bulk-add-establishments",
+      formData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  }catch(error){
+    console.error('Error adding entity1:', error);
+  }
+};
+
+export const getEstablishmentAnalyticsData = async () => {
+  const response = await axiosInstance.get(
+    `/admin/establishments/analytics-data`
+  );
+  return response.data;
+};

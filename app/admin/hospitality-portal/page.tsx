@@ -9,6 +9,7 @@ import Overview from "@/components/hospitality-portal/Overview";
 import Analytics from "@/components/hospitality-portal/Analytics";
 import Entities from "@/components/hospitality-portal/Entities";
 import Reports from "@/components/hospitality-portal/Reports";
+import BulkEntityRegistration from "@/components/hospitality-portal/CreateEntity";
 // import Cookies from "js-cookie";
 
 // type DashboardView =
@@ -29,6 +30,8 @@ const HospitalityDashboard = () => {
 
   const renderContent = () => {
     switch (activeView) {
+      case "create-entity":
+        return <BulkEntityRegistration />;
       case "overview":
         return <Overview />;
       case "analytics":

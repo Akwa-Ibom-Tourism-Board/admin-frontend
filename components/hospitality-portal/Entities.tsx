@@ -18,8 +18,9 @@ import {
   useGetEstablishments,
 } from "@/services/establishments/mutation";
 import EntityModal from "./EntityModal";
-import { Alerts, useAlert } from "next-alert";
+// import { useAlert } from "next-alert";
 import StatusModal from "../StatusModal";
+import Pagination from "@/components/general/Pagination";
 
 const Entities = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -28,6 +29,62 @@ const Entities = () => {
   const [entitiesData, setEntitiesData] = useState<any[]>([]);
   const [selectedEntity, setSelectedEntity] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [entityToDelete, setEntityToDelete] = useState<any>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [page, setPage] = useState(10);
+  const [limit] = useState(10);
+  const [totalPages, setTotalPages] = useState(10);
+  const [totalEntities, setTotalEntities] = useState(0);
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, filterType, filterLGA]);
+
+  const handleDeleteEntity = async () => {
+    if (!entityToDelete) return;
+
+    try {
+      setDeleteLoading(true);
+
+      /**
+       * 🔌 API CALL GOES HERE
+       * await deleteEntityApi(entityToDelete.id);
+       */
+
+      // Optimistic UI update
+      setEntitiesData((prev) => prev.filter((e) => e.id !== entityToDelete.id));
+
+      setStatusModal({
+        isOpen: true,
+        type: "success",
+        title: "Entity Deleted",
+        message: "The entity has been successfully deleted.",
+      });
+
+      closeDeleteModal();
+    } catch (error) {
+      setStatusModal({
+        isOpen: true,
+        type: "error",
+        title: "Delete Failed",
+        message: "Unable to delete entity. Please try again.",
+      });
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const openDeleteModal = (entity: any) => {
+    setEntityToDelete(entity);
+    setDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setEntityToDelete(null);
+    setDeleteModalOpen(false);
+  };
+
   const [statusModal, setStatusModal] = useState({
     isOpen: false,
     type: "success" as "success" | "error",
@@ -35,7 +92,7 @@ const Entities = () => {
     message: "",
   });
 
-  const { addAlert } = useAlert();
+  // const { addAlert } = useAlert();
 
   const { data: allEntities, isPending: entitiesLoading } =
     useGetEstablishments();
@@ -274,7 +331,7 @@ const Entities = () => {
                   <td className="px-6 py-4">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                        entity.registrationStatus
+                        entity.registrationStatus,
                       )}`}
                     >
                       {entity.registrationStatus}
@@ -307,8 +364,15 @@ const Entities = () => {
                       {approvalLoading
                         ? "Processing..."
                         : entity.registrationStatus === "approved"
-                        ? "Cancel Approval"
-                        : "Approve Entity"}
+                          ? "Cancel Approval"
+                          : "Approve Entity"}
+                    </button>
+                    <button
+                      onClick={() => openDeleteModal(entity)}
+                      disabled={deleteLoading}
+                      className="text-red-600 cursor-pointer hover:text-red-800 font-medium text-sm transition-colors"
+                    >
+                      Delete
                     </button>
                   </td>
                 </tr>
@@ -338,7 +402,7 @@ const Entities = () => {
               </div>
               <span
                 className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                  entity.registrationStatus
+                  entity.registrationStatus,
                 )}`}
               >
                 {entity.registrationStatus}
@@ -385,13 +449,27 @@ const Entities = () => {
                 {approvalLoading
                   ? "Processing..."
                   : entity.registrationStatus === "approved"
-                  ? "Cancel Approval"
-                  : "Approve Entity"}
+                    ? "Cancel Approval"
+                    : "Approve Entity"}
+              </button>
+
+              <button
+                onClick={() => openDeleteModal(entity)}
+                disabled={deleteLoading}
+                className="text-red-600 cursor-pointer hover:text-red-800 font-medium text-sm"
+              >
+                Delete
               </button>
             </div>
           </div>
         ))}
       </div>
+
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        onPageChange={(p) => !entitiesLoading && setPage(p)}
+      />
 
       <EntityModal
         isOpen={isModalOpen}
@@ -407,6 +485,49 @@ const Entities = () => {
         title={statusModal.title}
         message={statusModal.message}
       />
+
+      {deleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+            <h3 className="text-xl font-semibold text-[#2a2523] mb-2">
+              Delete Entity
+            </h3>
+
+            <p className="text-lg text-[#78716e] mb-6">
+              Are you sure you want to permanently delete{" "}
+              <span className="font-medium text-[#2a2523]">
+                {entityToDelete?.businessName}
+              </span>
+              ? This action cannot be undone.
+            </p>
+
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={closeDeleteModal}
+                className="px-4 py-2 rounded-lg cursor-pointer border border-[#e9e1d7] text-[#2a2523] hover:bg-[#fdf8f4]"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleDeleteEntity}
+                disabled={deleteLoading}
+                className="px-4 py-2 rounded-lg cursor-pointer bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-50"
+              >
+                {deleteLoading ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Total Entities */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <div className="bg-[#00563b] text-white rounded-full shadow-lg px-6 py-3 flex items-center gap-2">
+          <span className="text-sm font-medium">Total Entities</span>
+          <span className="text-lg font-bold">{filteredEntities.length}</span>
+        </div>
+      </div>
     </div>
   );
 };

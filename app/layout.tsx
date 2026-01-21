@@ -34,7 +34,7 @@ export default function RootLayout({
       >
         <Providers>
           {children}
-          <div className="custom-alerts">
+          <div className="custom-alerts fixed z-[9999]">
             <Alerts position="top-left" direction="left" timer={6000} className="z-50"/>
           </div>
         </Providers>

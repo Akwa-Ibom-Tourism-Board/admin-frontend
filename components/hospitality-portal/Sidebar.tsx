@@ -11,7 +11,12 @@ import {
   X,
 } from "lucide-react";
 
-type DashboardView = "overview" | "analytics" | "entities" | "reports";
+type DashboardView =
+  | "create-entity"
+  | "overview"
+  | "analytics"
+  | "entities"
+  | "reports";
 type CoreView = "overview" | "content" | "news" | "events" | "analytics";
 
 interface SidebarProps {
@@ -34,6 +39,11 @@ const Sidebar = ({
       id: "overview" as DashboardView,
       label: "Overview",
       icon: LayoutDashboard,
+    },
+    {
+      id: "create-entity" as DashboardView,
+      label: "Register Entity",
+      icon: FileText,
     },
     { id: "analytics" as DashboardView, label: "Analytics", icon: BarChart3 },
     { id: "entities" as DashboardView, label: "Entities", icon: Building2 },

@@ -5,6 +5,8 @@ import {
   getAllEstablishments,
   getSingleEstablishment,
   approveEntityRegistration,
+  addEstablishments,
+  getEstablishmentAnalyticsData,
 } from "./api";
 
 export function useLoginAdmin() {
@@ -56,12 +58,29 @@ export function useApproveEstablishmentRegistration() {
   });
 }
 
-// export function useSendVerificationOtp() {
-//   return useMutation({
-//     mutationFn: sendEstablishmentOtp,
-//     onSuccess: async () => {},
-//     onError: (error: any) => {
-//       console.error("Error sending OTP:", error);
-//     },
-//   });
-// }
+export function useAdminAddEstablishment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: addEstablishments,
+    onSuccess: async () => {
+      queryClient.invalidateQueries({
+        queryKey: ["getAllEstablishments", "getEstablishmentsAnalyticsData"],
+      });
+    },
+    onError: (error: any) => {
+      console.error("Error adding entity:", error.message);
+    },
+  });
+}
+
+export function useGetEstablishmentsAnalyticsData() {
+  return useQuery({
+    queryKey: ["getEstablishmentsAnalyticsData"],
+    queryFn: () => getEstablishmentAnalyticsData(),
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    //   onError: (error) => {
+    //     toast.error(error?.response?.data?.message || "An error occurred while fetching rent");
+    //   },
+  });
+}

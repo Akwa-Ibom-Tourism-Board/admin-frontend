@@ -348,7 +348,7 @@ const AdminLogin = () => {
           }
         },
         onError: (error: any) => {
-          console.error("Login error:", error);
+          console.error("Login error:", error.message);
           addAlert(
             "Error",
             error?.response?.data?.message ||
