@@ -1,73 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// app/admin/page.tsx
 "use client";
 
-import React, { useState } from "react";
-import DashboardHeader from "@/components/hospitality-portal/DashboardHeader";
-import Sidebar from "@/components/hospitality-portal/Sidebar";
 import Overview from "@/components/hospitality-portal/Overview";
-import Analytics from "@/components/hospitality-portal/Analytics";
-import Entities from "@/components/hospitality-portal/Entities";
-import Reports from "@/components/hospitality-portal/Reports";
-import BulkEntityRegistration from "@/components/hospitality-portal/CreateEntity";
-// import Cookies from "js-cookie";
 
-// type DashboardView =
-//   | "overview"
-//   | "analytics"
-//   | "entities"
-//   | "reports"
-//   | "logout"
-
-const HospitalityDashboard = () => {
-  const [activeView, setActiveView] = useState<any>("overview");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  // const handleLogout = () => {
-  //   Cookies.remove("access_token");
-  //   // Cookies.remove("userProfile");
-  //   window.location.href = "/";
-  // };
-
-  const renderContent = () => {
-    switch (activeView) {
-      case "create-entity":
-        return <BulkEntityRegistration />;
-      case "overview":
-        return <Overview />;
-      case "analytics":
-        return <Analytics />;
-      case "entities":
-        return <Entities />;
-      case "reports":
-        return <Reports />;
-      default:
-        return <Overview />;
-    }
-  };
-
+export default function HospitalityOverview() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#fdf8f4] to-[#fff7ec]">
-      <DashboardHeader
-        onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
-        portalName="Hospitality"
-      />
-
-      <div className="flex">
-        <Sidebar
-          isOpen={sidebarOpen}
-          activeView={activeView}
-          onViewChange={setActiveView}
-          onClose={() => setSidebarOpen(false)}
-          portalType="hospitality"
-          // onLogout={handleLogout}
-        />
-
-        <main className="flex-1 p-6 lg:ml-64">
-          <div className="max-w-7xl mx-auto">{renderContent()}</div>
-        </main>
-      </div>
-    </div>
+<div className="mt-20">
+  <Overview />
+</div>
   );
-};
-
-export default HospitalityDashboard;
+}

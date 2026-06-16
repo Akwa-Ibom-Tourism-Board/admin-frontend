@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import {
   Plus,
   Trash2,
@@ -11,6 +12,7 @@ import {
   Building2,
   Upload,
   Download,
+  Loader,
 } from "lucide-react";
 import {
   initialEntityState,
@@ -21,6 +23,7 @@ import EntityForm from "./EntityForms";
 import { useAdminAddEstablishment } from "@/services/establishments/mutation";
 import { Alerts, useAlert } from "next-alert";
 import { CustomSpinner } from "../general/CustomSpinner";
+import LoadingState from "./LoadingState";
 
 const BulkEntityRegistration = () => {
   const [entities, setEntities] = useState([
@@ -29,6 +32,7 @@ const BulkEntityRegistration = () => {
   const [submitting, setSubmitting] = useState(false);
   const [saveStatus, setSaveStatus] = useState("");
   const [errors, setErrors] = useState<any>({});
+  const router = useRouter();
 
   const { addAlert } = useAlert();
 
@@ -41,7 +45,7 @@ const BulkEntityRegistration = () => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed.length > 0) {
+        if (Array.isArray(parsed) && parsed.length > 0) {
           setEntities(parsed);
           setSaveStatus("Loaded saved data");
           setTimeout(() => setSaveStatus(""), 3000);
@@ -70,15 +74,15 @@ const BulkEntityRegistration = () => {
     }, 100);
   };
 
-  const removeEntity = (id: string) => {
+  const removeEntity = (id: any) => {
     if (entities.length > 1) {
       setEntities(entities.filter((e: any) => e.id !== id));
     }
   };
 
-  const updateEntity = (id: string, field: string, value: any) => {
+  const updateEntity = (id: any, field: string, value: any) => {
     setEntities(
-      entities.map((e: any) => (e.id === id ? { ...e, [field]: value } : e))
+      entities.map((e: any) => (e.id === id ? { ...e, [field]: value } : e)),
     );
     // Clear error for this field
     setErrors((prev: any) => {
@@ -89,10 +93,10 @@ const BulkEntityRegistration = () => {
   };
 
   const handleArrayChange = (
-    id: string,
+    id: any,
     field: string,
     option: string,
-    checked: boolean
+    checked: boolean,
   ) => {
     setEntities(
       entities.map((e: any) => {
@@ -104,18 +108,18 @@ const BulkEntityRegistration = () => {
           return { ...e, [field]: newArray };
         }
         return e;
-      })
+      }),
     );
   };
 
-  const handleOtherInputChange = (id: string, field: string, value: string) => {
+  const handleOtherInputChange = (id: any, field: string, value: string) => {
     setEntities(
       entities.map((e: any) => {
         if (e.id === id) {
           return { ...e, [`${field}Other`]: value };
         }
         return e;
-      })
+      }),
     );
   };
 
@@ -145,7 +149,7 @@ const BulkEntityRegistration = () => {
     if (!entity.contactName) newErrors[`${entity.id}-contactName`] = "Required";
 
     const contactPhoneError = validations.nigerianPhone(
-      entity.contactPhoneNumber
+      entity.contactPhoneNumber,
     );
     if (contactPhoneError)
       newErrors[`${entity.id}-contactPhoneNumber`] = contactPhoneError;
@@ -176,13 +180,66 @@ const BulkEntityRegistration = () => {
     return newErrors;
   };
 
+  // Prepare data for submission - handles both single and bulk
+ const prepareSubmissionData = (entities: any[]) => {
+  return entities.map(
+    ({ id, facilitiesOther, serviceTypesOther, ...entity }) => {
+      const baseData: any = {
+        ...entity,
+        // FIX: strip markdown link format before sending
+        website: entity.website
+          ? entity.website.replace(/^\[.*?\]\((.*?)\)$/, "$1")
+          : entity.website,
+        roomCount: entity.roomCount ? Number(entity.roomCount) : null,
+        bedSpaces: entity.bedSpaces ? Number(entity.bedSpaces) : null,
+        seatingCapacity: entity.seatingCapacity
+          ? Number(entity.seatingCapacity)
+          : null,
+        yearEstablished: entity.yearEstablished
+          ? Number(entity.yearEstablished)
+          : null,
+        submittedAt: new Date().toISOString(),
+      };
+
+      // Append custom "Other" facility if provided
+      if (facilitiesOther?.trim()) {
+        baseData.facilities = [
+          ...(entity.facilities || []),
+          facilitiesOther.trim(),
+        ];
+      } else {
+        baseData.facilities = entity.facilities || [];
+      }
+
+      // Append custom "Other" service type if provided
+      if (serviceTypesOther?.trim()) {
+        baseData.serviceTypes = [
+          ...(entity.serviceTypes || []),
+          serviceTypesOther.trim(),
+        ];
+      } else {
+        baseData.serviceTypes = entity.serviceTypes || [];
+      }
+
+      // Remove undefined values
+      Object.keys(baseData).forEach((key) => {
+        if (baseData[key] === undefined) {
+          delete baseData[key];
+        }
+      });
+
+      return baseData;
+    }
+  );
+};
+
   const handleSubmit = async () => {
-      const allErrors = {};
-      entities.forEach((entity) => {
-          const entityErrors = validateEntity(entity);
-          Object.assign(allErrors, entityErrors);
-        });
-        console.log('errors',allErrors);
+    // Validate all entities
+    const allErrors: any = {};
+    entities.forEach((entity) => {
+      const entityErrors = validateEntity(entity);
+      Object.assign(allErrors, entityErrors);
+    });
 
     if (Object.keys(allErrors).length > 0) {
       setErrors(allErrors);
@@ -193,71 +250,42 @@ const BulkEntityRegistration = () => {
 
     setSubmitting(true);
     setSaveStatus("");
+      const preparedData = prepareSubmissionData(entities);
 
-    try {
-      // Prepare data for submission - matching user registration format
-      const payload = entities.map(
-        ({ id, facilitiesOther, serviceTypesOther, ...entity }) => {
-          const baseData = {
-            ...entity,
-            roomCount: entity.roomCount ? Number(entity.roomCount) : null,
-            bedSpaces: entity.bedSpaces ? Number(entity.bedSpaces) : null,
-            seatingCapacity: entity.seatingCapacity
-              ? Number(entity.seatingCapacity)
-              : null,
-            yearEstablished: Number(entity.yearEstablished),
-            submittedAt: new Date().toISOString(),
-          };
+      // Support both single and bulk creation
+      const payload =
+        preparedData.length === 1
+          ? preparedData[0] // Single entity
+          : { establishments: preparedData }; // Bulk entities
 
-          // Process other options
-          if (facilitiesOther?.trim()) {
-            baseData.facilities = [
-              ...(entity.facilities || []),
-              facilitiesOther.trim(),
-            ];
-          }
-
-          if (serviceTypesOther?.trim()) {
-            baseData.serviceTypes = [
-              ...(entity.serviceTypes || []),
-              serviceTypesOther.trim(),
-            ];
-          }
-
-          return baseData;
-        }
-      );
-
-      adminAddsEstablishment(
-        {
-          establishments: payload,
+      adminAddsEstablishment(payload, {
+        onSuccess: (response: any) => {
+          addAlert(
+            "Success",
+            response?.data?.message || "Process Successful",
+            "success",
+          );
+          localStorage.removeItem(STORAGE_KEY);
+          setEntities([{ ...initialEntityState, id: Date.now() }]);
+          setSaveStatus("Successfully registered all entities!");
+          setTimeout(() => setSaveStatus(""), 5000);
+          router.push("/admin/hospitality-portal/entities");
         },
-        {
-          onSuccess: () => {
-            addAlert("Success", "Process Successful", "success");
-            localStorage.removeItem(STORAGE_KEY);
-            setEntities([{ ...initialEntityState, id: Date.now() }]);
-            setSaveStatus("Successfully registered all entities!");
-            setTimeout(() => setSaveStatus(""), 5000);
-          },
-          onError: (error) => {
-            console.error("Error adding entity:", error);
-            addAlert(
-              "Error",
-              error?.response?.data?.message ||
-                "An error occurred while adding establishments, please try again. If error persists, please contact IT Team.",
-              "error"
-            );
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Submission error:", error);
-      setSaveStatus("Error submitting registrations. Please try again.");
-      setTimeout(() => setSaveStatus(""), 5000);
-    } finally {
-      setSubmitting(false);
-    }
+        onError: (error: any) => {
+          console.error("Error adding entity:", error);
+          addAlert(
+            "Error",
+            error?.response?.data?.message ||
+              "An error occurred while adding establishments, please try again. If error persists, please contact IT Team.",
+            "error",
+          );
+          setSaveStatus("Error submitting registrations. Please try again.");
+          setTimeout(() => setSaveStatus(""), 5000);
+        },
+        onSettled: () => {
+          setSubmitting(false);
+        },
+      });
   };
 
   const clearAll = () => {
@@ -281,9 +309,29 @@ const BulkEntityRegistration = () => {
   };
 
   return (
-    <div className="pt-16 pb-24">
-      {" "}
-      {/* Increased bottom padding for floating buttons */}
+    <div className="pt-16 pb-24 relative">
+      {/* Loading Overlay */}
+      {(submitting || isLoadingCreate) && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[99] flex items-center justify-center">
+          <div className="bg-white rounded-xl p-8 shadow-2xl max-w-md w-full mx-4">
+            <div className="flex flex-col items-center gap-4">
+              <div className="p-3 bg-[#00563b]/10 rounded-full animate-pulse">
+                <Loader className="w-8 h-8 text-[#00563b] animate-spin" />
+              </div>
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-[#2a2523] mb-2">
+                  Processing Registrations
+                </h3>
+                <p className="text-sm text-[#78716e]">
+                  {submitting || isLoadingCreate
+                    ? "Submitting entities, please wait..."
+                    : "Please wait..."}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-[#2a2523] mb-2">
@@ -291,9 +339,10 @@ const BulkEntityRegistration = () => {
         </h1>
         <p className="text-[#78716e]">
           Register multiple hospitality establishments at once. Data is
-          automatically saved.
+          automatically saved and persists after page refresh.
         </p>
       </div>
+
       {/* Status Bar */}
       {saveStatus && (
         <div
@@ -311,14 +360,17 @@ const BulkEntityRegistration = () => {
           <span>{saveStatus}</span>
         </div>
       )}
+
       {/* Action Buttons - Main section */}
       <div className="mb-6 flex flex-wrap gap-3">
         <button
           onClick={addEntity}
           disabled={submitting || isLoadingCreate}
           className={`px-4 py-2 ${
-            submitting || isLoadingCreate ? "bg-gray-500" : "bg-[#00563b]"
-          } text-white rounded-lg hover:bg-[#004430] transition-colors flex items-center gap-2`}
+            submitting || isLoadingCreate
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-[#00563b] hover:bg-[#004430]"
+          } text-white rounded-lg transition-colors flex items-center gap-2`}
         >
           <Plus className="w-4 h-4" />
           Add Entity
@@ -328,11 +380,16 @@ const BulkEntityRegistration = () => {
           onClick={handleSubmit}
           disabled={submitting || isLoadingCreate}
           className={`px-4 py-2 ${
-            submitting || isLoadingCreate ? "bg-gray-500" : "bg-[#e77818]"
-          } text-white rounded-lg hover:bg-[#d16d15] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed`}
+            submitting || isLoadingCreate
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-[#e77818] hover:bg-[#d16d15]"
+          } text-white rounded-lg transition-colors flex items-center gap-2`}
         >
           {submitting || isLoadingCreate ? (
-            <CustomSpinner title="Processing" />
+            <>
+              <Loader className="w-4 h-4 animate-spin" />
+              Processing...
+            </>
           ) : (
             <>
               <Send className="w-4 h-4" />
@@ -343,7 +400,8 @@ const BulkEntityRegistration = () => {
 
         <button
           onClick={exportToJSON}
-          className="px-4 py-2 bg-white border-2 border-[#e9e1d7] text-[#2a2523] rounded-lg hover:border-[#00563b] hover:bg-[#00563b]/5 transition-all flex items-center gap-2"
+          disabled={submitting || isLoadingCreate}
+          className="px-4 py-2 bg-white border-2 border-[#e9e1d7] text-[#2a2523] rounded-lg hover:border-[#00563b] hover:bg-[#00563b]/5 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Download className="w-4 h-4" />
           Export Backup
@@ -351,14 +409,18 @@ const BulkEntityRegistration = () => {
 
         <button
           onClick={clearAll}
-          className="px-4 py-2 bg-white border-2 border-[#e9e1d7] text-[#dc2626] rounded-lg hover:border-[#dc2626] hover:bg-[#dc2626]/5 transition-all flex items-center gap-2"
+          disabled={submitting || isLoadingCreate}
+          className="px-4 py-2 bg-white border-2 border-[#e9e1d7] text-[#dc2626] rounded-lg hover:border-[#dc2626] hover:bg-[#dc2626]/5 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Trash2 className="w-4 h-4" />
           Clear All
         </button>
       </div>
+
       {/* Entity Forms */}
-      <div className="space-y-6">
+      <div
+        className={`space-y-6 ${submitting || isLoadingCreate ? "opacity-50 pointer-events-none" : ""}`}
+      >
         {entities.map((entity: Record<string, any>, index) => (
           <EntityForm
             key={entity.id}
@@ -370,26 +432,31 @@ const BulkEntityRegistration = () => {
             handleOtherInputChange={handleOtherInputChange}
             removeEntity={removeEntity}
             errors={errors}
+            disabled={submitting || isLoadingCreate}
           />
         ))}
       </div>
+
       {/* Summary */}
       <div className="mt-6 p-4 bg-[#00563b]/5 border border-[#00563b]/20 rounded-lg">
         <p className="text-sm text-[#2a2523]">
           <strong>{entities.length}</strong>{" "}
           {entities.length === 1 ? "entity" : "entities"} ready for
-          registration. Data is automatically saved to prevent loss on page
+          registration. Data is automatically saved and persists after page
           refresh.
         </p>
       </div>
+
       {/* Floating Action Buttons */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col sm:flex-row gap-3">
         <button
           onClick={addEntity}
           disabled={submitting || isLoadingCreate}
           className={`px-4 py-3 ${
-            submitting || isLoadingCreate ? "bg-gray-500" : "bg-[#00563b]"
-          } text-white rounded-lg hover:bg-[#004430] transition-colors flex items-center gap-2 shadow-lg hover:shadow-xl`}
+            submitting || isLoadingCreate
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-[#00563b] hover:bg-[#004430]"
+          } text-white rounded-lg transition-colors flex items-center gap-2 shadow-lg hover:shadow-xl`}
         >
           <Plus className="w-5 h-5" />
           <span className="hidden sm:inline">Add Entity</span>
@@ -400,11 +467,17 @@ const BulkEntityRegistration = () => {
           onClick={handleSubmit}
           disabled={submitting || isLoadingCreate}
           className={`px-4 py-3 ${
-            submitting || isLoadingCreate ? "bg-gray-500" : "bg-[#e77818]"
-          } text-white rounded-lg hover:bg-[#d16d15] transition-colors flex items-center gap-2 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed`}
+            submitting || isLoadingCreate
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-[#e77818] hover:bg-[#d16d15]"
+          } text-white rounded-lg transition-colors flex items-center gap-2 shadow-lg hover:shadow-xl`}
         >
           {submitting || isLoadingCreate ? (
-            <CustomSpinner title="Processing" />
+            <>
+              <Loader className="w-5 h-5 animate-spin" />
+              <span className="hidden sm:inline">Processing...</span>
+              <span className="sm:hidden">...</span>
+            </>
           ) : (
             <>
               <Send className="w-5 h-5" />

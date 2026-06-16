@@ -7,6 +7,7 @@ import {
   approveEntityRegistration,
   addEstablishments,
   getEstablishmentAnalyticsData,
+  updateEstablishment,
 } from "./api";
 
 export function useLoginAdmin() {
@@ -31,15 +32,14 @@ export function useGetEstablishments() {
   });
 }
 
-export function useGetSingleEstablishment() {
+export function useGetSingleEstablishment(establishmentId: any) {
   return useQuery({
-    queryKey: ["getSingleEstablishments"],
-    queryFn: () => getSingleEstablishment,
+    queryKey: ["getSingleEstablishment", establishmentId],
+    queryFn: () => getSingleEstablishment(establishmentId),
+    enabled: !!establishmentId,
+    retry: 1,
     refetchOnMount: true,
     refetchOnWindowFocus: false,
-    //   onError: (error) => {
-    //     toast.error(error?.response?.data?.message || "An error occurred while fetching rent");
-    //   },
   });
 }
 
@@ -63,9 +63,8 @@ export function useAdminAddEstablishment() {
   return useMutation({
     mutationFn: addEstablishments,
     onSuccess: async () => {
-      queryClient.invalidateQueries({
-        queryKey: ["getAllEstablishments", "getEstablishmentsAnalyticsData"],
-      });
+      queryClient.invalidateQueries({ queryKey: ["getAllEstablishments"] });
+      queryClient.invalidateQueries({ queryKey: ["getEstablishmentsAnalyticsData"] });
     },
     onError: (error: any) => {
       console.error("Error adding entity:", error.message);
@@ -84,3 +83,18 @@ export function useGetEstablishmentsAnalyticsData() {
     //   },
   });
 }
+
+export const useUpdateEstablishment = (establishmentId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (updateData: Record<string, any>) =>
+      updateEstablishment(updateData, establishmentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["establishments"] });
+      queryClient.invalidateQueries({
+        queryKey: ["establishment", establishmentId],
+      });
+    },
+  });
+};

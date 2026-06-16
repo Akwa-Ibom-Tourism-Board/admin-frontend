@@ -12,6 +12,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { useGetEstablishmentsAnalyticsData } from "@/services/establishments/mutation";
+import SkeletonLoader from "./SkeletonLoader";
 
 interface DashboardStats {
   totalEntities: number;
@@ -111,47 +112,76 @@ const Overview = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {statCards.map((card, index) => (
-          <StatCard
-            key={index}
-            title={card.title}
-            value={card.value}
-            icon={card.icon}
-            color={card.color}
-            change={card.change}
-            loading={analyticsLoading}
-            analyticsData={analyticsData?.data}
-          />
-        ))}
-      </div>
+      {analyticsLoading ? (
+        <SkeletonLoader count={6} variant="card" />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {statCards.map((card, index) => (
+            <StatCard
+              key={index}
+              title={card.title}
+              value={card.value}
+              icon={card.icon}
+              color={card.color}
+              change={card.change}
+              loading={analyticsLoading}
+              analyticsData={analyticsData?.data}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Quick Actions */}
       <div className="bg-white rounded-xl border border-[#e9e1d7] p-6 shadow-sm">
         <h2 className="text-xl font-bold text-[#2a2523] mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <button className="p-4 border-2 border-[#e9e1d7] rounded-lg hover:border-[#00563b] hover:bg-[#00563b]/5 transition-all group">
-            <Download className="w-8 h-8 text-[#78716e] group-hover:text-[#00563b] mb-2" />
-            <p className="font-medium text-[#2a2523]">Export All Data</p>
-            <p className="text-sm text-[#78716e]">Excel format</p>
+            <div className="flex items-center mb-2 gap-4">
+              <div>
+                <Download className="w-8 h-8 text-[#78716e] group-hover:text-[#00563b] mb-2" />
+              </div>
+              <div>
+                <p className="font-medium text-[#2a2523]">Export All Data</p>
+                <p className="text-sm text-[#78716e]">Excel format</p>
+              </div>
+            </div>
           </button>
 
           <button className="p-4 border-2 border-[#e9e1d7] rounded-lg hover:border-[#e77818] hover:bg-[#e77818]/5 transition-all group">
-            <Building2 className="w-8 h-8 text-[#78716e] group-hover:text-[#e77818] mb-2" />
-            <p className="font-medium text-[#2a2523]">Hotel Reports</p>
-            <p className="text-sm text-[#78716e]">Detailed analysis</p>
+            <div className="flex items-center mb-2 gap-4">
+              <div>
+                <Building2 className="w-8 h-8 text-[#78716e] group-hover:text-[#e77818] mb-2" />
+              </div>
+              <div>
+                <p className="font-medium text-[#2a2523]">Hotel Reports</p>
+                <p className="text-sm text-[#78716e]">Detailed analysis</p>
+              </div>
+            </div>
           </button>
 
           <button className="p-4 border-2 border-[#e9e1d7] rounded-lg hover:border-[#dc2626] hover:bg-[#dc2626]/5 transition-all group">
-            <Users className="w-8 h-8 text-[#78716e] group-hover:text-[#dc2626] mb-2" />
-            <p className="font-medium text-[#2a2523]">User Management</p>
-            <p className="text-sm text-[#78716e]">Admin controls</p>
+            <div className="flex items-center mb-2 gap-4">
+              <div>
+                <Users className="w-8 h-8 text-[#78716e] group-hover:text-[#dc2626] mb-2" />
+              </div>
+
+              <div>
+                <p className="font-medium text-[#2a2523]">User Management</p>
+                <p className="text-sm text-[#78716e]">Admin controls</p>
+              </div>
+            </div>
           </button>
 
           <button className="p-4 border-2 border-[#e9e1d7] rounded-lg hover:border-[#059669] hover:bg-[#059669]/5 transition-all group">
-            <BarChart3 className="w-8 h-8 text-[#78716e] group-hover:text-[#059669] mb-2" />
-            <p className="font-medium text-[#2a2523]">Generate Reports</p>
-            <p className="text-sm text-[#78716e]">Custom reports</p>
+            <div className="flex items-center mb-2 gap-4">
+              <div>
+                <BarChart3 className="w-8 h-8 text-[#78716e] group-hover:text-[#059669] mb-2" />
+              </div>
+              <div>
+                <p className="font-medium text-[#2a2523]">Generate Reports</p>
+                <p className="text-sm text-[#78716e]">Custom reports</p>
+              </div>
+            </div>
           </button>
         </div>
       </div>
