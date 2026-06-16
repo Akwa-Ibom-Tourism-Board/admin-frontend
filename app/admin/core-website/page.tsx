@@ -88,14 +88,14 @@ const CoreWebsiteDashboard = () => {
       />
       
       <div className="flex">
-        <Sidebar
+        {/* <Sidebar
           isOpen={sidebarOpen}
           activeView={activeView}
           onViewChange={setActiveView}
           onClose={() => setSidebarOpen(false)}
           portalType="core"
           // onLogout={handleLogout}
-        />
+        /> */}
         
         <main className="flex-1 p-6 lg:ml-64">
           <div className="max-w-7xl mx-auto">
