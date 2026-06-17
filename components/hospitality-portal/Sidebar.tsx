@@ -99,7 +99,7 @@ const Sidebar = ({ isOpen, onClose, portalType = "hospitality" }: SidebarProps) 
 
   const handleLogout = () => {
     setLogoutLoading(true);
-    localStorage.clear();
+    // localStorage.clear();
     addAlert("Goodbye", `See you again soon`, "success");
     setTimeout(() => {
       router.push("/");
