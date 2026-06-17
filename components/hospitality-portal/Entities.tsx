@@ -518,7 +518,7 @@ const Entities = () => {
       )}
 
       {/* Floating Total Entities */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-26 right-4 z-50">
         <div className="bg-[#00563b] text-white rounded-full shadow-lg px-6 py-3 flex items-center gap-2">
           <span className="text-sm font-medium">Total Entities</span>
           <span className="text-lg font-bold">{filteredEntities.length}</span>
