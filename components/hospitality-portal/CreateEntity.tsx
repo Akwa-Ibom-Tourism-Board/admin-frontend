@@ -442,8 +442,7 @@ const BulkEntityRegistration = () => {
         <p className="text-sm text-[#2a2523]">
           <strong>{entities.length}</strong>{" "}
           {entities.length === 1 ? "entity" : "entities"} ready for
-          registration. Data is automatically saved and persists after page
-          refresh.
+          registration.
         </p>
       </div>
 
