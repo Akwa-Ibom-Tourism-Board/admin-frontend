@@ -121,7 +121,7 @@ const AdminLogin = () => {
                 <div className="flex-shrink-0">
                   <Image
                     src="/board-new-logo-2.png"
-                    alt="Akwa Ibom State Hotels & Tourism Board"
+                    alt="Akwa Ibom State Hotels & Tourism Development Commission"
                     width={150}
                     height={150}
                     className="object-contain w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 xl:w-[150px] xl:h-[150px]"
@@ -131,7 +131,7 @@ const AdminLogin = () => {
                 <div className="flex-shrink-0">
                   <Image
                     src="/arise-logo-main.png"
-                    alt="Akwa Ibom State Hotels & Tourism Board"
+                    alt="Akwa Ibom State Hotels & Tourism Development Commission"
                     width={150}
                     height={150}
                     className="object-contain w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 xl:w-[150px] xl:h-[150px]"
@@ -184,7 +184,7 @@ const AdminLogin = () => {
               <div className="bg-white rounded-2xl shadow-2xl border border-[#e9e1d7] p-8">
                 <div>
                   <h1 className="text-lg lg:text-xl text-center font-bold text-[#2a2523]">
-                    Akwa Ibom State Hotels & Tourism Board
+                    Akwa Ibom State Hotels & Tourism Development Commission
                   </h1>
                   <h1 className="text-lg lg:text-xl text-center font-bold text-[#2a2523]">
                     Admin Portal
