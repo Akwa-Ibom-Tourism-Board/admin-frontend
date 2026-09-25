@@ -24,7 +24,7 @@ export const getSingleEstablishment = async (establishmentId: string) => {
 
 export const approveEntityRegistration = async (establishmentId: string) => {
   const response = await axiosInstance.patch(
-    `/admin/establishments/approve/${establishmentId}`,
+    `/admin/establishments/${establishmentId}/approve`,
   );
   return response.data;
 };

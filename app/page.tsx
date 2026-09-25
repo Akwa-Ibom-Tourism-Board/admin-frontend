@@ -56,7 +56,7 @@ const AdminLogin = () => {
     try {
       loginAdmin(formData, {
         onSuccess: (data) => {
-          Cookies.set("access_token", data.data.accessToken, {
+          Cookies.set("access_token", data.data.token, {
             expires: 30,
             secure: true,
             sameSite: "strict",
